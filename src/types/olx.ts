@@ -15,7 +15,7 @@ export type Item = {
     parcela: number
   } | object
   promocao: boolean
-  datAnunciado: Date
-  datMinerado: Date
+  datAnunciado: string
+  datMinerado: string
   valido: boolean
 }

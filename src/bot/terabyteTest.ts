@@ -1,6 +1,7 @@
 import puppeteer, { ElementHandle } from 'puppeteer'
 import terabyteMapping from '../mapping/terabyte'
 import { Item } from '../types/terabyte'
+import { persistItemArray } from '../typesense/cli'
 
 const formatSearchTerm = (term: string) => term.replace(' ', '+')
 
@@ -31,18 +32,21 @@ export async function main(term: string) {
   console.log(`consultando a ulr -> ${termSearchUrl}`)
 
   // realiza a busca
-  await page.goto(termSearchUrl, { waitUntil: 'domcontentloaded' })
+  await page.goto(termSearchUrl, { waitUntil: 'networkidle0' })
 
   const promisesItems = await (
     await page.$$(terabyteMapping.search.resultItem.ItemContainerElm)
   ).map((itemElm) => new Promise((resolve) => resolve(itemExtractor(itemElm) as unknown as Item)))
 
-  let dados = (await Promise.all(promisesItems))
+  let dados: Item[] = await Promise.all(promisesItems) as Item[]
   dados = dados.filter(item => (item as Item).valido)
   console.log(`Foram minerados com sucesso ${dados.length}`)
   console.log(dados)
 
   await browser.close()
+
+  // alimentando o typesense
+  await persistItemArray(dados)
 
   return dados
 }

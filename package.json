@@ -4,12 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start:dev": "npx ts-node src/index.ts",
-    "start:test": "npx ts-node src/utils/dateTransformation.ts",
+    "start:dev": "npx ts-node src/index.ts \"olx\" \"ryzen\"",
+    "typesense:query": "npx ts-node src/typesense/queryTest.ts \"ryzen\"",
     "start": "node ./dist/index.js",
     "build": "rimraf ./dist && tsc",
     "lint": "npx eslint --fix --color ./src/**/*.ts",
-    "prettier": "npx prettier --write --config ./.prettierrc ./src/**/*.ts"
+    "prettier": "npx prettier --write --config ./.prettierrc ./src/**/*.ts",
+    "configure-typesense": "npx ts-node src/typesense/collectionCreation.ts"
   },
   "keywords": [],
   "author": "",
@@ -25,8 +26,10 @@
     "typescript": "^5.2.2"
   },
   "dependencies": {
+    "@babel/runtime": "^7.23.2",
     "puppeteer": "^21.3.8",
     "sugar": "^2.0.6",
+    "typesense": "^1.7.2",
     "utf8": "^3.0.0"
   }
 }

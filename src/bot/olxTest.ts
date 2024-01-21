@@ -2,6 +2,7 @@ import puppeteer, { ElementHandle, Page } from 'puppeteer'
 import { dateTransformation } from '../utils/dateTransformation'
 import { Item, RegiaoResultado } from '../types/olx'
 import olxMapping from '../mapping/olx'
+import { persistItemArray } from '../typesense/cli'
 
 // TODO
 // identificar destacados / promocoes
@@ -67,12 +68,15 @@ export async function main(term: string) {
     })
   })
 
-  const dados = (await Promise.all(promisesPaginas)).flat(1)
+  const dados: Item[] = (await Promise.all(promisesPaginas)).flat(1) as Item[]
 
   console.log(`Foram minerados com sucesso ${dados.length}`)
   console.log(dados)
 
   await browser.close()
+
+  // alimentando o typesense
+  await persistItemArray(dados)
 
   return dados
 }
@@ -190,8 +194,8 @@ const itemExtractor = async (itemElm: ElementHandle): Promise<Item> => {
       avista: priceTransformation(preco),
       parcelado: precoParcelado,
       promocao: false,
-      datAnunciado: dateTransformation(postagem),
-      datMinerado: new Date(),
+      datAnunciado: BigInt(dateTransformation(postagem).getTime()).toString(),
+      datMinerado: BigInt(new Date().getTime()).toString(),
       valido,
     }
   }
@@ -205,8 +209,8 @@ const itemExtractor = async (itemElm: ElementHandle): Promise<Item> => {
     avista: 0,
     parcelado: {},
     promocao: false,
-    datAnunciado: new Date(),
-    datMinerado: new Date(),
+    datAnunciado: BigInt(new Date().getTime()).toString(),
+    datMinerado: BigInt(new Date().getTime()).toString(),
     valido: false,
   }
 }

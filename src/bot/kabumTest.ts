@@ -1,6 +1,7 @@
 import puppeteer, { ElementHandle } from 'puppeteer'
 import kabumMapping from '../mapping/kabum'
 import { Item } from '../types/kabum'
+import { persistItemArray } from '../typesense/cli'
 
 const formatSearchTerm = (term: string) => term.replace(' ', '-')
 
@@ -47,11 +48,14 @@ export async function main(term: string) {
     await page.$$(kabumMapping.search.resultItem.ItemContainerElm)
   ).map((itemElm) => new Promise((resolve) => resolve(itemExtractor(itemElm))))
 
-  const dados = await Promise.all(promisesItems)
+  const dados: Item[] = await Promise.all(promisesItems) as Item[]
   console.log(`Foram minerados com sucesso ${dados.length}`)
   console.log(dados)
 
   await browser.close()
+
+  // alimentando o typesense
+  await persistItemArray(dados)
 
   return dados
 }
@@ -103,7 +107,7 @@ const itemExtractor = async (itemElm: ElementHandle): Promise<Item> => {
       avista: priceTransformation(preco),
       parcelado: {},
       promocao: false,
-      datMinerado: new Date(),
+      datMinerado: BigInt(new Date().getTime()).toString(),
       valido: true,
     }
   }
@@ -116,7 +120,7 @@ const itemExtractor = async (itemElm: ElementHandle): Promise<Item> => {
     avista: 0,
     parcelado: {},
     promocao: false,
-    datMinerado: new Date(),
+    datMinerado: BigInt(new Date().getTime()).toString(),
     valido: false,
   }
 }
