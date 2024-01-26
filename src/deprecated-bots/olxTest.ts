@@ -10,7 +10,7 @@ import { persistItemArray } from '../typesense/cli'
 
 export async function main(term: string) {
   const browser = await puppeteer.launch({
-    headless: 'new',
+    headless: false,
     ignoreHTTPSErrors: true,
     args: [`--window-size=${1000},${1000}`],
     defaultViewport: {
@@ -27,9 +27,12 @@ export async function main(term: string) {
   const termSearchUrl = olxMapping.search.baseURL + encodeURIComponent(term)
 
   // realiza a busca
-  await page.goto(termSearchUrl, { waitUntil: 'networkidle0' })
+  await page.goto(termSearchUrl, { waitUntil: 'domcontentloaded' })
 
-  //coleta dados do cabecalho
+  // coleta dados do cabecalho 
+  //  
+  await page.waitForXPath(olxMapping.search.regionsFoundDiv)
+  
   const regionsFounds = await page.$x(olxMapping.search.regionsFoundDiv)
   const regionsText = (await regionsFounds[0].evaluate(
     (el) => el.textContent,
@@ -108,7 +111,7 @@ function transformaRegioes(conteudoCru: string): RegiaoResultado[] {
   }
 
   return correspondencias.map((correspondencia) => {
-    const regiao = (`DDD ${correspondencia[1]} - ${correspondencia[2]}`)
+    const regiao = `DDD ${correspondencia[1]} - ${correspondencia[2]}`
     const resultados = parseInt(correspondencia[3], 10)
     return { regiao, resultados }
   })
@@ -134,11 +137,9 @@ const itemExtractor = async (itemElm: ElementHandle): Promise<Item> => {
     )?.evaluate((el) => el.getAttribute('src'))) as string,
   )
 
-  const nome = 
-    (await (
-      await itemElm.$(nameElm)
-    )?.evaluate((el) => el.textContent)) as string
-  
+  const nome = (await (
+    await itemElm.$(nameElm)
+  )?.evaluate((el) => el.textContent)) as string
 
   const regiao = decodeURIComponent(
     (await (

@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start:dev": "npx ts-node src/index.ts \"olx\" \"ryzen\"",
+    "start:test" : "npx ts-node src/index.ts",
+    "start:dev": "npx ts-node src/index.ts \"terabyte\" \"ps5\"",
     "typesense:query": "npx ts-node src/typesense/queryTest.ts \"ryzen\"",
     "start": "node ./dist/index.js",
     "build": "rimraf ./dist && tsc",
@@ -28,7 +29,9 @@
   "dependencies": {
     "@babel/runtime": "^7.23.2",
     "puppeteer": "^21.3.8",
+    "reflect-metadata": "^0.2.1",
     "sugar": "^2.0.6",
+    "tsyringe": "^4.8.0",
     "typesense": "^1.7.2",
     "utf8": "^3.0.0"
   }

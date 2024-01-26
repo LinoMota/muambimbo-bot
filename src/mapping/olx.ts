@@ -11,6 +11,7 @@ const olxMapping: OlxMapping = {
     baseURL: 'https://www.olx.com.br/estado-am?q=',
     regionsFoundDiv: '//*[@id="main-content"]/div[1]/div/div[2]/div/div',
     resultDataElm: '//*[@id="main-content"]/div[2]/div[1]/p',
+    searchResultNum: '/html/body/div[1]/div/main/div[1]/div[2]/main/div[2]/div/p',
     resultItem: {
       ItemContainerElm: '.olx-ad-card',
       coverImgElm: '.olx-image-carousel__item picture img',

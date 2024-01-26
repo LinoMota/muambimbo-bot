@@ -12,6 +12,7 @@ export default interface OlxMapping extends SiteMapping {
     baseURL:string,
     regionsFoundDiv: string,
     resultDataElm: string,
+    searchResultNum: string,
     resultItem: {
       ItemContainerElm: string
       coverImgElm: string,
